@@ -15,12 +15,11 @@ class BlockChain:
         block.hash = 0
         return block
 
-    # TODO: Proper way?
     def get_latest_block(self):
-        return self.chain[len(self.chain) - 1]
+        return self.chain[-1]
 
     def add_block(self, data):
-        new_block = Block(self.get_latest_block().index + 1, data, self.get_latest_block().hash, self.difficulty)
+        new_block = Block(self.get_latest_block().index_no + 1, data, self.get_latest_block().hash, self.difficulty)
         self.chain.append(new_block)
 
     def display(self):
@@ -29,8 +28,8 @@ class BlockChain:
 
 
 class Block:
-    def __init__(self, index, data, previous_hash, difficulty):
-        self.index = index
+    def __init__(self, index_no, data, previous_hash, difficulty):
+        self.index_no = index_no
         self.data = data
         self.timestamp = datetime.datetime.now()
         self.previous_hash = previous_hash
@@ -40,7 +39,7 @@ class Block:
 
     def calculate_hash(self):
         self.hash = hashlib.sha256((
-            str(self.index) + self.data + self.timestamp.strftime("%m/%d/%Y, %H:%M:%S") + str(self.previous_hash) + str(
+            str(self.index_no) + self.data + self.timestamp.strftime("%m/%d/%Y, %H:%M:%S") + str(self.previous_hash) + str(
                 self.nonce)).encode("utf-8")).hexdigest()
         print(self.hash)
 
@@ -52,14 +51,13 @@ class Block:
     def valid(self, difficulty):
         return str(self.hash)[:difficulty] == "0" * difficulty
 
-    # TODO: Format text
     def display(self):
         print(
-            " Index         : " + str(self.index) + "\n",
-            "Data          : " + self.data + "\n",
-            "Timestamp     : " + str(self.timestamp) + "\n",
-            "Hash          : " + str(self.hash) + "\n",
-            "Previous hash : " + str(self.previous_hash) + "\n"
+            "\nIndex         : " + str(self.index_no),
+            "\nData          : " + self.data,
+            "\nTimestamp     : " + str(self.timestamp),
+            "\nHash          : " + str(self.hash),
+            "\nPrevious hash : " + str(self.previous_hash)
         )
 
 
