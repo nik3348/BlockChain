@@ -1,17 +1,19 @@
 import datetime
 import hashlib
-
-
-def genesis_block():
-    block = Block(0, "0", 0, 0)
-    block.hash = 0
-    return block
+from flask import Flask
+app = Flask(__name__)
 
 
 class BlockChain:
     def __init__(self):
-        self.chain = [genesis_block()]
-        self.difficulty = 4
+        self.chain = [self.genesis_block()]
+        self.difficulty = 1
+
+    @staticmethod
+    def genesis_block():
+        block = Block(0, "0", 0, 0)
+        block.hash = 0
+        return block
 
     # TODO: Proper way?
     def get_latest_block(self):
@@ -59,6 +61,11 @@ class Block:
             "Hash          : " + str(self.hash) + "\n",
             "Previous hash : " + str(self.previous_hash) + "\n"
         )
+
+
+@app.route('/')
+def index():
+    return 'Index Page'
 
 
 p1 = BlockChain()
