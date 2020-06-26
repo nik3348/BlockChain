@@ -1,29 +1,44 @@
-import pymongo as pymongo
+import json
+import os
 import pprint
-from entities.BlockChain import BlockChain
-from flask import Flask
+from bson import json_util
+from collections import namedtuple
 
+import pymongo
+from dotenv import load_dotenv
+from flask import Flask, request
+
+from entities.blockchain import BlockChain, Block
+
+load_dotenv()
 app = Flask(__name__)
 
+db_connection = os.getenv("DBCONN")
 
-@app.route('/', methods=['GET', 'POST'])
+client = pymongo.MongoClient(db_connection)
+db = client.blockchain
+col = db.blocks
+
+chain = BlockChain()
+for blocks in col.find():
+    block = Block(blocks.get('nonce'), blocks.get('data'), blocks.get('previous_hash'), )
+    block.index_no = blocks.get('_id')
+    block.hash = blocks.get('hash')
+    block.timestamp = blocks.get('timestamp')
+    block.nonce = blocks.get('nonce')
+    chain.add(block)
+
+chain.display()
+
+
+@app.route('/', methods=['GET'])
 def index():
     return 'Index Page'
 
 
-p1 = BlockChain()
-p1.add_block("John")
-p1.add_block("Sherry")
-p1.add_block("Berry")
-p1.add_block("Dumbo")
-p1.display()
-
-client = pymongo.MongoClient(
-    "mongodb+srv://root:root@cluster0-nde0z.gcp.mongodb.net/blockchain?retryWrites=true&w=majority"
-)
-
-db = client.blockchain
-block = db.blocks
-
-block.insert_one(p1.get_latest_block().__dict__)
-pprint.pprint(block.find_one())
+@app.route('/mine', methods=['POST'])
+def mine():
+    request_json = request.get_json()
+    new_block = chain.add_block(request_json.get('data')).__dict__
+    col.insert_one(new_block)
+    return "Success"
