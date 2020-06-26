@@ -1,8 +1,4 @@
-import json
 import os
-import pprint
-from bson import json_util
-from collections import namedtuple
 
 import pymongo
 from dotenv import load_dotenv
