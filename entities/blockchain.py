@@ -5,7 +5,7 @@ import hashlib
 class BlockChain:
     def __init__(self):
         self.chain = [self.genesis_block()]
-        self.difficulty = 1
+        self.difficulty = 4
 
     @staticmethod
     def genesis_block():
